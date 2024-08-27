@@ -7,12 +7,12 @@ const bodyParser = require('body-parser');
 const port = process.env.PORT || 5000;
 
 // DB Connect Middleware
-const connectDB = require('./Config/db');
+const dbMiddleware = require('./Middlewares/dbMiddlewares');
 
 // Middlewares
 app.use(bodyParser.json());
 app.use(cors());
-app.use(connectDB);
+app.use(dbMiddleware);
 
 const authRoute = require('./Routes/AuthRouter');
 
