@@ -1,40 +1,44 @@
-const { model } = require("mongoose");
-const UserModel = require("../Models/Users");
+// Controllers/AuthControllers.js
 const bcrypt = require('bcrypt');
-const { json } = require("body-parser");
 
-const signup = async(req, res) => {
-    try{
-        const {name, email, password, image} = req.body;
-        const user = await UserModel.findOne({email});
+const signup = async (req, res) => {
+  try {
+    const { name, email, password, image } = req.body;
+    const usersCollection = req.db.collection('users');
 
-        if(user){
-            return res.status(409)
-                .json({
-                    message: 'User Already Exist ..! Please Login',
-                    success: false
-                })
-        }
+    const user = await usersCollection.findOne({ email });
 
-        const newUser = new UserModel({name, email, password, image});
-        newUser.password = await bcrypt.hash(password, 10);
-        await newUser.save();
-        res.status(201)
-              .json({
-                message: 'User Create Success',
-                success: true
-              })
+    if (user) {
+      return res.status(409).json({
+        message: 'User Already Exists. Please Login',
+        success: false
+      });
     }
-    catch(error){
-        res.status(500)
-            .json({
-                message: 'Internal Server Error',
-                success: false
-        })
-    }
-}
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = {
+      name,
+      email,
+      password: hashedPassword,
+      image
+    };
+
+    await usersCollection.insertOne(newUser);
+
+    res.status(201).json({
+      message: 'User Created Successfully',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error during signup:', error);
+    res.status(500).json({
+      message: 'Internal Server Error',
+      success: false,
+      error: error.message
+    });
+  }
+};
 
 module.exports = {
-    signup
-}
+  signup
+};
