@@ -17,7 +17,7 @@ const client = new MongoClient(uri, {
 async function connectDB() {
   if (!db) { 
     try {
-      await client.connect(); 
+      // await client.connect(); 
       console.log("MongoDB Connected");
       db = client.db('MarketingBlog'); 
     } catch (error) {

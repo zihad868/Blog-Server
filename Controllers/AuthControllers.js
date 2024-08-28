@@ -1,5 +1,6 @@
 // Controllers/AuthControllers.js
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const signup = async (req, res) => {
   try {
@@ -39,6 +40,55 @@ const signup = async (req, res) => {
   }
 };
 
+const signin = async(req, res) => {
+  try{
+    const { email, password }  = req.body;
+    const userCollection = req.db.collection('users');
+
+    const user = await userCollection.findOne({ email })
+
+    if(!user){
+      return res.status(400)
+          .json({
+             message: "User Does't Exist.! Please Signup",
+             success: false
+          })
+    }
+
+    const isPassEqual = await bcrypt.compare(password, user.password);
+
+    if(!isPassEqual){
+       return res.status(400)
+       .json({
+         message: 'Email or Password is incorrect',
+         success: false
+       })
+    }
+
+    const jwtToken = jwt.sign(
+      {email: user.email, _id: user._id},
+      process.env.JWT_SECRET,
+      {expiresIn: '2days'}
+      )
+    res.status(200)
+       .json({
+         message: 'Login Success',
+         success: true,
+         jwtToken,
+         email,
+         name: user.name
+       })
+
+  }catch(error){
+     res.status(500)
+        .json({
+           message: 'Internal Server Error',
+           success: false
+        })
+  }
+}
+
 module.exports = {
-  signup
+  signup,
+  signin
 };
