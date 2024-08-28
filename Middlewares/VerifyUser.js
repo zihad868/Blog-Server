@@ -13,7 +13,7 @@ const ensureAuthentication = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;  // Attach decoded information to the request object
+        req.user = decoded;
         next();
     } catch (error) {
         return res.status(403).json({

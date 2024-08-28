@@ -106,7 +106,7 @@ const userInfo = async(req, res) => {
             })
       }
 
-      const {name, email, image} = user;
+      const {name, email, image, role} = user;
       const userInformation = {name, email, image, role};
 
       res.status(200)
