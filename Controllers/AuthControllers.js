@@ -21,7 +21,8 @@ const signup = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      image
+      image,
+      role: 'user'
     };
 
     await usersCollection.insertOne(newUser);
@@ -88,7 +89,43 @@ const signin = async(req, res) => {
   }
 }
 
+
+const userInfo = async(req, res) => {
+   try{
+
+      let { queryEmail } = req?.query;
+      const userCollection = await req.db.collection('users');
+
+      const user = await userCollection.findOne({ email: queryEmail });
+
+      if(!user){
+        return res.status(400)
+            .json({
+               message: "User Does't Exist",
+               success: false
+            })
+      }
+
+      const {name, email, image} = user;
+      const userInformation = {name, email, image, role};
+
+      res.status(200)
+         .json({
+           message: "Get User Information successfully",
+           success: true,
+           userInformation 
+         })
+   }catch(error){
+    res.status(500)
+        .json({
+           message: 'Internal Server Error',
+           success: false
+        })
+   }
+}
+
 module.exports = {
   signup,
-  signin
+  signin,
+  userInfo
 };
