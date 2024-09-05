@@ -23,7 +23,36 @@ const post = async (req, res) => {
     }
 } 
 
+const getPosts = async (req, res) => {
+    try{
+        const postCollection = await req.db.collection('post');
+
+       const posts = await postCollection.find().toArray();
+       
+       if(!posts){
+          return res.status(400)
+                  .json({
+                    message: "Can't get any posts",
+                    success: false
+                  })
+       }
+
+       res.status(200).json({
+          message: 'Get posts success',
+          success: true,
+          posts: posts
+       })
+
+    }catch(error){
+        res.status(500)
+            .json({
+                message: 'Internal Server Error',
+                error: error.message
+            })
+    }
+}
 
 module.exports = {
-    post
+    post,
+    getPosts
 }
