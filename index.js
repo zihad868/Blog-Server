@@ -15,9 +15,14 @@ app.use(cors());
 app.use(dbMiddleware);
 
 const authRoute = require('./Routes/AuthRouter');
+const postRoute = require('./Routes/PostRouter');
 
 // Routing
+// Auth Route
 app.use('/auth', authRoute);
+
+// Post Route
+app.use('/api', postRoute);
 
 app.get('/', (req, res) => {
   res.send("Server is running ...");
