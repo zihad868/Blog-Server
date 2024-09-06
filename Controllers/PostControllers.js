@@ -28,7 +28,10 @@ const getPosts = async (req, res) => {
         const { queryEmail } = req?.query;
         const postCollection = await req.db.collection('post');
 
-       const posts = await postCollection.find({authEmail: queryEmail}).toArray();
+       // Filter Email
+       const filter = queryEmail ? { authEmail: queryEmail } : {};
+
+       const posts = await postCollection.find(filter).sort({_id: -1}).toArray();
        
        if(!posts){
           return res.status(400)
