@@ -3,14 +3,24 @@ const post = async (req, res) => {
     try{
         const {authName, authEmail, authImg, title, description, postImg, postImg2} = req.body;
         
-        const postCollection = req.db.collection('post');
-        const newPost = {authName, authEmail, authImg, title, description, postImg, postImg2};
+        const postCollection = req.db.collection('posts');
+        const newPost = {authName, 
+                         authEmail, 
+                         authImg, 
+                         title, 
+                         description, 
+                         postImg, 
+                         postImg2,
+                         createdAt: new Date()
+                        };
 
         await postCollection.insertOne(newPost);
+
+        console.log(newPost)
     
         res.status(201).json({
             message: 'Create Post Success',
-            success: false
+            success: true
         })
     }catch(error){
         console.error("Post Add failed", error);
@@ -26,12 +36,12 @@ const post = async (req, res) => {
 const getPosts = async (req, res) => {
     try{
         const { queryEmail } = req?.query;
-        const postCollection = await req.db.collection('post');
+        const postCollection = await req.db.collection('posts');
 
        // Filter Email
        const filter = queryEmail ? { authEmail: queryEmail } : {};
 
-       const posts = await postCollection.find(filter).sort({_id: -1}).toArray();
+       const posts = await postCollection.find(filter).sort({createdAt: -1}).toArray();
        
        if(!posts){
           return res.status(400)

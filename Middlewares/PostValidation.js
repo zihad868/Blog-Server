@@ -10,7 +10,8 @@ const PostValidation  = (req, res, next) => {
         description: Joi.string().required(),
         category: Joi.string().required(),
         postImg: Joi.string(),
-        postImg2: Joi.string()
+        postImg2: Joi.string(),
+        createdAt: Joi.date()
     })
 
     const { error } = schema.validate(req.body);
